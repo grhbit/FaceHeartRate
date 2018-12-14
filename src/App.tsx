@@ -1,29 +1,19 @@
-import { Permissions } from "expo";
 import * as React from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import { createStackNavigator } from "react-navigation";
+import Routes from "./routes";
+import CameraScreen from "./screens/CameraScreen";
+import MainScreen from "./screens/MainScreen";
 
-type State = {
-  hasCameraPermission?: boolean;
-};
 
-export default class App extends React.Component<{}, State> {
-  public state: State = {};
+const RootStack = createStackNavigator({
+  [Routes.Camera]: CameraScreen,
+  [Routes.Main]: MainScreen,
+}, {
+  initialRouteName: Routes.Main
+});
 
-  public async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === "granted" });
-  }
-
+export default class App extends React.Component {
   public render() {
-    const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View />;
-    }
-
-    return (
-      <SafeAreaView>
-        <Text>{hasCameraPermission ? "Grants permission to access camera" : "No access to camera"}</Text>
-      </SafeAreaView>
-    );
+    return <RootStack />;
   }
 }
