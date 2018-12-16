@@ -15,7 +15,7 @@ type Props = {};
 
 class MainScreen extends React.Component<Props & NavigationScreenProps> {
   public render() {
-    return <Box><Button title="Go to CameraScreen" onPress={this.handlePress} /></Box>;
+    return <Box><Button title="run" onPress={this.handlePress} /></Box>;
   }
 
   private handlePress = () => {

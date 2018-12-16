@@ -6,8 +6,18 @@ import MainScreen from "./screens/MainScreen";
 
 
 const RootStack = createStackNavigator({
-  [Routes.Camera]: CameraScreen,
-  [Routes.Main]: MainScreen,
+  [Routes.Camera]: {
+    navigationOptions: {
+      header: null
+    },
+    screen: CameraScreen,
+  },
+  [Routes.Main]: {
+    navigationOptions: {
+      title: "Face HeartRate"
+    },
+    screen: MainScreen,
+  },
 }, {
   initialRouteName: Routes.Main
 });
