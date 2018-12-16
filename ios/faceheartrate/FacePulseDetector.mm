@@ -10,23 +10,32 @@
 #import <opencv2/core/core.hpp>
 #import <opencv2/opencv.hpp>
 #import <Firebase/Firebase.h>
+#import <map>
+#import <set>
+#import <iostream>
 
 #import "FacePulseDetector.h"
 #import "ImageUtils.h"
+#import "RPPG.hpp"
 
 @interface FacePulseDetector ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong) FIRVision *vision;
 @property (nonatomic, strong) FIRVisionFaceDetector *faceDetector;
+@property (nonatomic, copy) RCTDirectEventBlock onFacesDetected;
+@property (nonatomic, copy) RCTDirectEventBlock onHeartRate;
 
 @end
 
-@implementation FacePulseDetector
+@implementation FacePulseDetector {
+    std::map<long, RPPG> rppgMap;
+}
 
-- (id)initWithBridge
+- (id)initWithBridge:(RCTBridge *)bridge
 {
     if ((self = [super init])) {
+        self.bridge = bridge;
         self.session = [AVCaptureSession new];
         self.sessionQueue = dispatch_queue_create("cameraQueue", DISPATCH_QUEUE_SERIAL);
         
@@ -76,7 +85,6 @@
 {
     [subview removeFromSuperview];
     [super removeReactSubview:subview];
-    return;
 }
 
 - (void)removeFromSuperview
@@ -232,21 +240,44 @@
 
 - (void)onDetectFaces:(NSArray<FIRVisionFace *> *)faces visionImage:(UIImage *)image
 {
+    std::set<long> trackingIDs;
     for (FIRVisionFace *face in faces) {
-        NSInteger trackingID = [face trackingID];
+        if ([face hasTrackingID] != YES) {
+            continue;
+        }
+        long trackingID = [face trackingID];
+        trackingIDs.insert(trackingID);
+
+        if (rppgMap.find(trackingID) == rppgMap.end()) {
+            RPPG rppg;
+            rppg.load(xminay, 0.001, 1, 5, 5);
+            rppgMap[trackingID] = rppg;
+        }
+        
+        RPPG& rppg = rppgMap[trackingID];
+
         FIRVisionFaceContour *leftEyebrowTop = [face contourOfType:FIRFaceContourTypeLeftEyebrowTop];
         FIRVisionFaceContour *leftEyebrowBottom = [face contourOfType:FIRFaceContourTypeLeftEyebrowBottom];
         FIRVisionFaceContour *rightEyebrowTop = [face contourOfType:FIRFaceContourTypeRightEyebrowTop];
         FIRVisionFaceContour *rightEyebrowBottom = [face contourOfType:FIRFaceContourTypeRightEyebrowBottom];
+        FIRVisionFaceContour *leftEye = [face contourOfType:FIRFaceContourTypeLeftEye];
+        FIRVisionFaceContour *rightEye = [face contourOfType:FIRFaceContourTypeRightEye];
+        FIRVisionFaceContour *faceOval = [face contourOfType:FIRFaceContourTypeFace];
 
-        if (leftEyebrowTop == nil || leftEyebrowBottom == nil || rightEyebrowTop == nil || rightEyebrowBottom == nil) {
+        if (leftEyebrowTop == nil ||
+            leftEyebrowBottom == nil ||
+            rightEyebrowTop == nil ||
+            rightEyebrowBottom == nil ||
+            leftEye == nil ||
+            rightEye == nil ||
+            faceOval == nil) {
             continue;
         }
         
-        FIRVisionPoint *ltID = [leftEyebrowTop.points lastObject];
-        FIRVisionPoint *lbID = [leftEyebrowBottom.points lastObject];
-        FIRVisionPoint *rtID = [rightEyebrowTop.points lastObject];
-        FIRVisionPoint *rbID = [rightEyebrowBottom.points lastObject];
+        FIRVisionPoint *ltID = [faceOval.points lastObject];
+        FIRVisionPoint *lbID = [leftEyebrowTop.points lastObject];
+        FIRVisionPoint *rtID = [faceOval.points firstObject];
+        FIRVisionPoint *rbID = [rightEyebrowTop.points lastObject];
         
         if (ltID == nil || lbID == nil || rtID == nil || rbID == nil) {
             continue;
@@ -257,12 +288,72 @@
         CGPoint lt = CGPointMake([rtID.x floatValue], [rtID.y floatValue]);
         CGPoint lb = CGPointMake([rbID.x floatValue], [rbID.y floatValue]);
         
-        [self.extView superview].frame = CGRectMake(80, 80, 256, 256);
-        self.extView.frame = [self.extView superview].bounds;
+        lt.x = (lt.x + lb.x) / 2.0f;
+        lt.y = (lt.y + lb.y) / 2.0f;
+        rt.x = (rt.x + rb.x) / 2.0f;
+        rt.y = (rt.y + rb.y) / 2.0f;
 
-        UIImage *warpedImage = [ImageUtils warpImage:image lt:lt lb:lb rt:rt rb:rb];
+        [self onFacesDetected:[NSNumber numberWithInteger:[face trackingID]] lt:lt lb:lb rt:rt rb:rb];
         
+        cv::Mat warpedMat = [ImageUtils warpImage:image lt:lt lb:lb rt:rt rb:rb];
+        
+        cv::Scalar means = [ImageUtils getSufaceMean:warpedMat];
+
+        int time = (cv::getTickCount()*1000.0)/cv::getTickFrequency();
+        if (rppg.processFrame(means, time)) {
+            [self onHeartRate:[NSNumber numberWithInteger:[face trackingID]]
+                  withMeanBpm:[NSNumber numberWithDouble:rppg.getMeanBpm()]
+                   withMaxBpm:[NSNumber numberWithDouble:rppg.getMaxBpm()]
+                   withMinBpm:[NSNumber numberWithDouble:rppg.getMinBpm()]];
+        }
+
+        UIImage *warpedImage = [ImageUtils UIImageFromCVMat:warpedMat];
+        [self.extView superview].frame = CGRectMake(0, 0, 128, 128);
+        self.extView.frame = [self.extView superview].bounds;
         [self.extView setImage:warpedImage];
+    }
+    
+    for (auto it : rppgMap) {
+        if (trackingIDs.find(it.first) == trackingIDs.end()) {
+            it.second.invalidateFace();
+        }
+    }
+}
+
+- (void)onFacesDetected:(NSNumber *)trackingID lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb
+{
+    if (_onFacesDetected) {
+        _onFacesDetected(@{
+                           @"trackingID": trackingID,
+                           @"lt": @{
+                                   @"x": [NSNumber numberWithFloat: lt.x],
+                                   @"y": [NSNumber numberWithFloat: lt.y]
+                                   },
+                           @"lb": @{
+                                   @"x": [NSNumber numberWithFloat: lb.x],
+                                   @"y": [NSNumber numberWithFloat: lb.y]
+                                   },
+                           @"rt": @{
+                                   @"x": [NSNumber numberWithFloat: rt.x],
+                                   @"y": [NSNumber numberWithFloat: rt.y]
+                                   },
+                           @"rb": @{
+                                   @"x": [NSNumber numberWithFloat: rb.x],
+                                   @"y": [NSNumber numberWithFloat: rb.y]
+                                   }
+                           });
+    }
+}
+
+- (void)onHeartRate:(NSNumber *)trackingID withMeanBpm:(NSNumber *)meanBpm withMaxBpm:(NSNumber *)maxBpm withMinBpm:(NSNumber *)minBpm
+{
+    if (_onHeartRate) {
+        _onHeartRate(@{
+                       @"trackingID": trackingID,
+                       @"meanBpm": meanBpm,
+                       @"maxBpm": maxBpm,
+                       @"minBpm": minBpm
+                       });
     }
 }
 

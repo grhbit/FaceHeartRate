@@ -3,7 +3,7 @@
 //  faceheartrate
 //
 //  Created by alchemist on 16/12/2018.
-//  Copyright © 2018 650 Industries, Inc. All rights reserved.
+//  Copyright © 2018. All rights reserved.
 //
 
 #import <opencv2/core/core.hpp>
@@ -17,6 +17,7 @@
 + (UIImage *)imageFromSampleBufferRef:(CMSampleBufferRef)sampleBuffer;
 + (cv::Mat)cvMatFromUIImage:(UIImage *)image;
 + (UIImage *)UIImageFromCVMat:(cv::Mat)cvMat;
-+ (UIImage *)warpImage:(UIImage *)image lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb;
++ (cv::Mat)warpImage:(UIImage *)image lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb;
++ (cv::Scalar)getSufaceMean:(cv::Mat)image;
 
 @end

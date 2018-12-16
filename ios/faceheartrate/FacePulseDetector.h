@@ -12,6 +12,8 @@
 #import <React/RCTBridgeModule.h>
 #import <UIKit/UIKit.h>
 
+@class RCTEventDispatcher;
+
 @interface FacePulseDetector : RCTView<AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property(nonatomic, strong) dispatch_queue_t sessionQueue;
@@ -21,6 +23,8 @@
 @property(nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 @property(nonatomic, strong) UIImageView *extView;
 
-- (id)initWithBridge;
+- (id)initWithBridge:(RCTBridge *)bridge;
+- (void)onFacesDetected:(NSNumber *)trackingID lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb;
+- (void)onHeartRate:(NSNumber *)trackingID withMeanBpm:(NSNumber *)meanBpm withMaxBpm:(NSNumber *)maxBpm withMinBpm:(NSNumber *)minBpm;
 
 @end

@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		335ED03F21C515D6007CAF35 /* FacePulseDetectorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.m */; };
+		335ED03F21C515D6007CAF35 /* FacePulseDetectorManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.mm */; };
 		335ED04221C516D6007CAF35 /* FacePulseDetector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 335ED04121C516D6007CAF35 /* FacePulseDetector.mm */; };
 		335ED05021C554AE007CAF35 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 335ED04F21C554AE007CAF35 /* GoogleService-Info.plist */; };
 		335ED05221C62427007CAF35 /* ImageUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 335ED05121C62427007CAF35 /* ImageUtils.mm */; };
+		335ED06121C67D0F007CAF35 /* RPPG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 335ED05F21C67D0F007CAF35 /* RPPG.cpp */; };
+		335ED06421C67E72007CAF35 /* opencv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 335ED06221C67E72007CAF35 /* opencv.cpp */; };
 		B501732B1DC01252003445D9 /* EXShell.plist in Resources */ = {isa = PBXBuildFile; fileRef = B501732A1DC01252003445D9 /* EXShell.plist */; };
 		B56386491DB9693800A0598C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B56386481DB9693800A0598C /* AppDelegate.m */; };
 		B56386511DB9693800A0598C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B56386501DB9693800A0598C /* Assets.xcassets */; };
@@ -27,13 +29,17 @@
 
 /* Begin PBXFileReference section */
 		2C1548D9E4CB1AEFA5CCAE6D /* Pods-faceheartrate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-faceheartrate.debug.xcconfig"; path = "Pods/Target Support Files/Pods-faceheartrate/Pods-faceheartrate.debug.xcconfig"; sourceTree = "<group>"; };
-		335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FacePulseDetectorManager.m; sourceTree = "<group>"; };
+		335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FacePulseDetectorManager.mm; sourceTree = "<group>"; };
 		335ED04021C51600007CAF35 /* FacePulseDetectorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FacePulseDetectorManager.h; sourceTree = "<group>"; };
 		335ED04121C516D6007CAF35 /* FacePulseDetector.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FacePulseDetector.mm; sourceTree = "<group>"; };
 		335ED04321C516E8007CAF35 /* FacePulseDetector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FacePulseDetector.h; sourceTree = "<group>"; };
 		335ED04F21C554AE007CAF35 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		335ED05121C62427007CAF35 /* ImageUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageUtils.mm; sourceTree = "<group>"; };
 		335ED05321C62436007CAF35 /* ImageUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageUtils.h; sourceTree = "<group>"; };
+		335ED05F21C67D0F007CAF35 /* RPPG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RPPG.cpp; sourceTree = "<group>"; };
+		335ED06021C67D0F007CAF35 /* RPPG.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RPPG.hpp; sourceTree = "<group>"; };
+		335ED06221C67E72007CAF35 /* opencv.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = opencv.cpp; sourceTree = "<group>"; };
+		335ED06321C67E72007CAF35 /* opencv.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = opencv.hpp; sourceTree = "<group>"; };
 		A47FE4D7F70906B7DC8CE39B /* Pods-faceheartrate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-faceheartrate.release.xcconfig"; path = "Pods/Target Support Files/Pods-faceheartrate/Pods-faceheartrate.release.xcconfig"; sourceTree = "<group>"; };
 		B501732A1DC01252003445D9 /* EXShell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXShell.plist; sourceTree = "<group>"; };
 		B56386411DB9693800A0598C /* faceheartrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceheartrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,12 +81,14 @@
 		335ED03B21C515A2007CAF35 /* FacePulseDetector */ = {
 			isa = PBXGroup;
 			children = (
-				335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.m */,
+				335ED03E21C515D6007CAF35 /* FacePulseDetectorManager.mm */,
 				335ED04021C51600007CAF35 /* FacePulseDetectorManager.h */,
 				335ED04121C516D6007CAF35 /* FacePulseDetector.mm */,
 				335ED04321C516E8007CAF35 /* FacePulseDetector.h */,
-				335ED05121C62427007CAF35 /* ImageUtils.mm */,
-				335ED05321C62436007CAF35 /* ImageUtils.h */,
+				335ED05F21C67D0F007CAF35 /* RPPG.cpp */,
+				335ED06021C67D0F007CAF35 /* RPPG.hpp */,
+				335ED06221C67E72007CAF35 /* opencv.cpp */,
+				335ED06321C67E72007CAF35 /* opencv.hpp */,
 			);
 			name = FacePulseDetector;
 			sourceTree = "<group>";
@@ -115,6 +123,8 @@
 		B56386431DB9693800A0598C /* faceheartrate */ = {
 			isa = PBXGroup;
 			children = (
+				335ED05121C62427007CAF35 /* ImageUtils.mm */,
+				335ED05321C62436007CAF35 /* ImageUtils.h */,
 				335ED04F21C554AE007CAF35 /* GoogleService-Info.plist */,
 				335ED03B21C515A2007CAF35 /* FacePulseDetector */,
 				B56386471DB9693800A0598C /* AppDelegate.h */,
@@ -308,10 +318,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				335ED04221C516D6007CAF35 /* FacePulseDetector.mm in Sources */,
+				335ED06421C67E72007CAF35 /* opencv.cpp in Sources */,
+				335ED06121C67D0F007CAF35 /* RPPG.cpp in Sources */,
 				B56386611DB96A5E00A0598C /* main.m in Sources */,
 				B56386491DB9693800A0598C /* AppDelegate.m in Sources */,
 				335ED05221C62427007CAF35 /* ImageUtils.mm in Sources */,
-				335ED03F21C515D6007CAF35 /* FacePulseDetectorManager.m in Sources */,
+				335ED03F21C515D6007CAF35 /* FacePulseDetectorManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

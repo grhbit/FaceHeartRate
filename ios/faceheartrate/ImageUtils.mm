@@ -3,7 +3,7 @@
 //  faceheartrate
 //
 //  Created by alchemist on 16/12/2018.
-//  Copyright © 2018 650 Industries, Inc. All rights reserved.
+//  Copyright © 2018. All rights reserved.
 //
 
 #import "ImageUtils.h"
@@ -104,9 +104,11 @@
     return finalImage;
 }
 
-- (UIImage *)warpImage:(UIImage *)image lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb
++ (cv::Mat)warpImage:(UIImage *)image lt:(CGPoint)lt lb:(CGPoint)lb rt:(CGPoint)rt rb:(CGPoint)rb
 {
     cv::Mat rawData = [ImageUtils cvMatFromUIImage:image];
+    cv::Mat removedAlpha = cv::Mat(rawData.rows, rawData.cols, CV_8UC3);
+    cv::cvtColor(rawData, removedAlpha, CV_BGRA2BGR);
     
     cv::Point2f ptSrc[4];
     cv::Point2f ptDest[4];
@@ -121,12 +123,21 @@
     ptDest[3] = cv::Point2f(0, 256);
     
     cv::Mat mat = cv::getPerspectiveTransform(ptSrc, ptDest);
-    cv::Mat output = cv::Mat(256, 256, CV_8UC4);
-    cv::warpPerspective(rawData, output, mat, output.size());
+    cv::Mat output = cv::Mat(256, 256, CV_8UC3);
+    cv::warpPerspective(removedAlpha, output, mat, output.size());
     
-    UIImage *finalImage = [ImageUtils UIImageFromCVMat:output];
-    
-    return finalImage;
+    return output;
+}
+
++ (cv::Scalar)getSufaceMean:(cv::Mat)image
+{
+    cv::Mat bgr[3];
+    cv::split(image, bgr);
+    double redMean = cv::mean(bgr[2]).val[0];
+    double greenMean = cv::mean(bgr[1]).val[0];
+    double blueMean = cv::mean(bgr[0]).val[0];
+
+    return cv::Scalar(blueMean, greenMean, redMean);
 }
 
 @end
