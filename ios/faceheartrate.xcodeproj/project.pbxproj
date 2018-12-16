@@ -441,7 +441,7 @@
 				DEVELOPMENT_TEAM = V67647EP23;
 				INFOPLIST_FILE = "$(SRCROOT)/faceheartrate/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FaceHeartRate;
+				PRODUCT_BUNDLE_IDENTIFIER = io.grhbit.FaceHeartRate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
@@ -458,7 +458,7 @@
 				DEVELOPMENT_TEAM = V67647EP23;
 				INFOPLIST_FILE = "$(SRCROOT)/faceheartrate/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FaceHeartRate;
+				PRODUCT_BUNDLE_IDENTIFIER = io.grhbit.FaceHeartRate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
